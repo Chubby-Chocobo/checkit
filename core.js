@@ -308,10 +308,16 @@ function Transformer(target, language) {
 _.extend(Transformer.prototype, {
 
   parseInt: function(val) {
+    if (isNaN(val)) {
+      return val;
+    }
     return parseInt(val);
   },
 
   parseFloat: function(val) {
+    if (isNaN(val)) {
+      return val;
+    }
     return parseFloat(val);
   },
 
