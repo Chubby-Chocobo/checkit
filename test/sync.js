@@ -427,20 +427,50 @@ describe('Checkit - sync', function() {
     });
   });
 
-  describe('checkit and transformit', function(){
-    it('runSync for transformit', function(){
+  describe('check-it and transform-it', function(){
+    it('runSync for built-in transformer', function(){
       var input = {
         inumber: '111'
       };
       var [err, result] = new Checkit({
         "inumber": {
           validator:['required', 'integer'],
-          transformer: 'integer'
+          transformer: 'parseInt'
         }
       }).validateSync(input);
 
       equal(result.inumber === 111, true);
     });
+
+    it('runSync for default transformer', function(){
+      var input = {
+        inumber: '123'
+      };
+      var [err, result] = new Checkit({
+        "inumber": ['required', 'integer'],
+      }).validateSync(input);
+
+      equal(result.inumber === 123, true);
+    });
+
+    it('runSync for customize transformer', function(){
+      Checkit.Transformer.prototype['customTransform'] = function(val) {
+        return val.toString() + 'xxx';
+      };
+
+      var input = {
+        inumber: 1
+      };
+      var [err, result] = new Checkit({
+        "inumber": {
+          validator: ['required', 'integer'],
+          transformer: 'customTransform'
+        },
+      }).validateSync(input);
+
+      equal(result.inumber === '1xxx', true);
+    });
+
   });
 
 });

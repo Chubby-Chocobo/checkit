@@ -307,11 +307,11 @@ function Transformer(target, language) {
 
 _.extend(Transformer.prototype, {
 
-  integer: function(val) {
+  parseInt: function(val) {
     return parseInt(val);
   },
 
-  float: function(val) {
+  parseFloat: function(val) {
     return parseFloat(val);
   },
 
@@ -452,6 +452,12 @@ var Regex = Checkit.Regex = {
   uuid: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 };
 
+var DefaultTransformer = Checkit.DefaultTransformer = {
+  integer: 'parseInt',
+  naturalNonZero: 'parseInt',
+  natural: 'parseInt',
+};
+
 // Error Types
 // ---------------
 
@@ -582,6 +588,9 @@ function prepValidations(validations) {
 
     for (var i = 0, l = validation.length; i < l; i++) {
       validation[i] = assembleValidation(validation[i]);
+      if (!transformer && DefaultTransformer[validation[i].rule]) {
+        transformer = DefaultTransformer[validation[i].rule];
+      }
     }
 
     validations[key].transformer = transformer;
@@ -608,12 +617,13 @@ function assembleValidation(validation) {
   return validation;
 }
 
-Checkit.FieldError      = FieldError
-Checkit.Error           = CheckitError
-Checkit.ValidationError = ValidationError
-Checkit.Runner          = Runner
-Checkit.SyncRunner      = SyncRunner
-Checkit.Validator       = Validator
+Checkit.FieldError      = FieldError;
+Checkit.Error           = CheckitError;
+Checkit.ValidationError = ValidationError;
+Checkit.Runner          = Runner;
+Checkit.SyncRunner      = SyncRunner;
+Checkit.Validator       = Validator;
+Checkit.Transformer     = Transformer;
 
 return Checkit;
 
