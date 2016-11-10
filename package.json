@@ -1,7 +1,7 @@
 {
-  "name": "checkit",
+  "name": "cc-checkit",
   "version": "0.7.0",
-  "description": "Simple validations for node and the browser.",
+  "description": "Simple validations for node and the browser. Forked from https://github.com/tgriesser/checkit",
   "main": "index.js",
   "scripts": {
     "test": "mocha -R spec test/index.js",
@@ -24,14 +24,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/tgriesser/checkit.git"
+    "url": "https://github.com/Chubby-Chocobo/checkit"
   },
   "keywords": [
     "validation"
   ],
   "author": {
-    "name": "Tim Griesser",
-    "web": "https://github.com/tgriesser"
+    "name": "Chubby-Chocobo",
+    "web": "https://github.com/Chubby-Chocobo"
   },
   "license": "MIT"
 }
