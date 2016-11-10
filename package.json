@@ -1,6 +1,6 @@
 {
   "name": "cc-checkit",
-  "version": "0.7.0",
+  "version": "1.0.0",
   "description": "Simple validations for node and the browser. Forked from https://github.com/tgriesser/checkit",
   "main": "index.js",
   "scripts": {

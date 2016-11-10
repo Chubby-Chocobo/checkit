@@ -42,7 +42,7 @@ describe('Checkit - sync', function() {
       it('should fail if the value is outside the range', function() {
         var arr = Checkit({
           integer: ['between:0:10']
-        }).runSync(testBlock)          
+        }).runSync(testBlock)
         assert(arr[0] instanceof Checkit.Error)
       })
 
@@ -319,7 +319,7 @@ describe('Checkit - sync', function() {
   });
 
   describe('custom validation rules', function() {
-    
+
     it('should run the rule function on the supplied value', function() {
       var value = 'value';
       var rulesTest = {
@@ -331,7 +331,7 @@ describe('Checkit - sync', function() {
       };
       return Checkit(rulesTest).run({valueTest: value})
     })
-    
+
     it('should fail when the validation rule throws an error', function(){
       var rulesTest = {
         failedRuleTest: {
@@ -344,7 +344,7 @@ describe('Checkit - sync', function() {
         equal(err.get('failedRuleTest').message, 'thrown from rule function');
       });
     })
-    
+
     it('should pass the supplied parameter to the validation rule', function(){
       var parameter = 'parameter';
       var rulesTest = {
@@ -357,7 +357,7 @@ describe('Checkit - sync', function() {
       };
       return Checkit(rulesTest).run({parameterTest: "value"})
     })
-    
+
     it('should pass the context property supplied to the run function to the rule function', function(){
       var runContext = 'the context';
       var rulesTest = {
@@ -369,7 +369,7 @@ describe('Checkit - sync', function() {
       }
       return Checkit(rulesTest).run({contextTest: "value"}, runContext)
     })
-    
+
   });
 
   describe('conditional items', function() {
@@ -411,7 +411,7 @@ describe('Checkit - sync', function() {
       var context = { foo: 'my context', bar: 'another field' };
       var res = null;
       Checkit({})
-      .maybe({}, function(item, context) { 
+      .maybe({}, function(item, context) {
         res = context;
       })
       .runSync({}, context);
@@ -424,6 +424,22 @@ describe('Checkit - sync', function() {
   describe('nested items', function(){
     it('validates for nested items', function(){
       return Checkit({"info.email": ['required', 'email']}).runSync({info: {email: "joe@gmail.com"}})
+    });
+  });
+
+  describe('checkit and transformit', function(){
+    it('runSync for transformit', function(){
+      var input = {
+        inumber: '111'
+      };
+      var [err, result] = new Checkit({
+        "inumber": {
+          validator:['required', 'integer'],
+          transformer: 'integer'
+        }
+      }).validateSync(input);
+
+      equal(result.inumber === 111, true);
     });
   });
 

@@ -5,6 +5,7 @@
 module.exports = function(_, Promise) {
 
 var inherits = require('inherits')
+var util = require('util');
 
 // The top level `Checkit` constructor, accepting the
 // `validations` to be run and any additional `options`.
@@ -118,9 +119,10 @@ function Runner(checkit, target, context) {
   this.errors         = {};
   this.checkit        = checkit;
   this.conditional    = checkit.conditional;
-  this.target         = _.clone(target || {})
-  this.context        = _.clone(context || {})
-  this.validator      = new Validator(this.target, checkit.language)
+  this.target         = _.clone(target || {});
+  this.context        = _.clone(context || {});
+  this.validator      = new Validator(this.target, checkit.language);
+  this.transformer    = new Transformer(this.target, checkit.language);
 }
 
 // Runs the validations on a specified "target".
@@ -278,8 +280,16 @@ SyncRunner.prototype.run = function() {
       } catch(err) {
         addError(errors, key, validation)(err)
       }
-    })
-  })
+    });
+
+    if (validations.transformer) {
+      try {
+        target[key] = runner.transformer[validations.transformer](target[key]);
+      } catch (err) {
+        addError(errors, key, {rule: 'transformer'})(err);
+      }
+    }
+  });
 
   if (!_.isEmpty(errors)) {
     var err = new CheckitError(_.keys(errors).length + ' invalid values');
@@ -289,6 +299,23 @@ SyncRunner.prototype.run = function() {
 
   return _.pick(target, _.keys(validationHash));
 }
+
+function Transformer(target, language) {
+  this._target = target;
+  this._language = language;
+}
+
+_.extend(Transformer.prototype, {
+
+  integer: function(val) {
+    return parseInt(val);
+  },
+
+  float: function(val) {
+    return parseFloat(val);
+  },
+
+});
 
 // Constructor for running the `Validations`.
 function Validator(target, language) {
@@ -541,11 +568,25 @@ function prepValidations(validations) {
   validations = _.cloneDeep(validations);
   for (var key in validations) {
     var validation = validations[key];
-    if (!_.isArray(validation)) validations[key] = validation = [validation];
+    var transformer = validation.transformer;
+    if (_.isPlainObject(validation) && validation.transformer) {
+      if (!validation.validator) {
+        throw new Error('Invalid validation format');
+      }
+      validations[key] = validation = validation.validator;
+    }
+
+    if (!_.isArray(validation)) {
+      validations[key] = validation = [validation];
+    }
+
     for (var i = 0, l = validation.length; i < l; i++) {
       validation[i] = assembleValidation(validation[i]);
     }
+
+    validations[key].transformer = transformer;
   }
+
   return validations;
 }
 
